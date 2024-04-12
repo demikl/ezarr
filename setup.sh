@@ -14,6 +14,7 @@ sudo useradd plex -u 13010
 sudo useradd sabnzbd -u 13011
 sudo useradd jellyseerr -u 13012
 sudo useradd bazarr -u 13013
+sudo useradd heimdall -u 13014
 sudo groupadd mediacenter -g 13000
 sudo usermod -a -G mediacenter sonarr
 sudo usermod -a -G mediacenter radarr
@@ -28,9 +29,10 @@ sudo usermod -a -G mediacenter plex
 sudo usermod -a -G mediacenter sabnzbd
 sudo usermod -a -G mediacenter jellyseerr
 sudo usermod -a -G mediacenter bazarr
+sudo usermod -a -G mediacenter heimdall
 
 # Make directories
-sudo mkdir -pv config/{sonarr,radarr,lidarr,readarr,mylar,prowlarr,qbittorrent,jackett,audiobookshelf,overseerr,plex,tautulli,sabnzbd,jellyseerr,bazarr}-config
+sudo mkdir -pv config/{sonarr,radarr,lidarr,readarr,mylar,prowlarr,qbittorrent,jackett,audiobookshelf,overseerr,plex,tautulli,sabnzbd,jellyseerr,bazarr,heimdall}-config
 sudo mkdir -pv data/{torrents,usenet,media}/{tv,movies,music,books,comics,audiobooks,podcasts,audiobookshelf-metadata}
 
 # Set permissions
@@ -49,5 +51,6 @@ sudo chown -R plex:mediacenter config/plex-config
 sudo chown -R sabnzbd:mediacenter config/sabnzbd-config
 sudo chown -R jellyseerr:mediacenter config/jellyseerr-config
 sudo chown -R bazarr:mediacenter config/bazarr-config
+sudo chown -R heimdall:mediacenter config/heimdall-config
 
 echo "UID=$(id -u)" >> .env
