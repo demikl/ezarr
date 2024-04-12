@@ -1,9 +1,29 @@
 ---
 version: "3.1"
+networks:
+  host-facing:
+    driver: bridge
+    internal: false
+  internet-access:
+    driver: bridge
+    internal: false
+  lb-upstreams:
+    driver: bridge
+    internal: true
+  wireguard-out:
+    driver: bridge
+    internal: false
+  wireguard-users:
+    driver: bridge
+    internal: true
+  
 services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    networks:
+      - lb-upstreams
+      - internet-access
     environment:
       - PUID=13001
       - PGID=13000
@@ -12,13 +32,19 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/sonarr-config:/config
       - /var/lib/vz/ezarr/data:/data
-    ports:
-      - "8989:8989"
+    expose:
+      - 8989
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.lan`)"
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    networks:
+      - lb-upstreams
+      - internet-access
     environment:
       - PUID=13002
       - PGID=13000
@@ -27,13 +53,19 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/radarr-config:/config
       - /var/lib/vz/ezarr/data:/data
-    ports:
-      - "7878:7878"
+    expose:
+      - 7878
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.lan`)"
 
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
     container_name: lidarr
+    networks:
+      - lb-upstreams
+      - internet-access
     environment:
       - PUID=13003
       - PGID=13000
@@ -42,13 +74,19 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/lidarr-config:/config
       - /var/lib/vz/ezarr/data:/data
-    ports:
-      - "8686:8686"
+    expose:
+      - 8686
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.lan`)"
 
   readarr:
     image: lscr.io/linuxserver/readarr:develop
     container_name: readarr
+    networks:
+      - lb-upstreams
+      - internet-access
     environment:
       - PUID=13004
       - PGID=13000
@@ -58,12 +96,18 @@ services:
       - /var/lib/vz/ezarr/config/readarr-config:/config
       - /var/lib/vz/ezarr/data:/data
     ports:
-      - "8787:8787"
+      - 8787
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.lan`)"
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:develop
     container_name: prowlarr
+    networks:
+      - lb-upstreams
+      - internet-access
     environment:
       - PUID=13006
       - PGID=13000
@@ -72,12 +116,18 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/prowlarr-config:/config
     ports:
-      - "9696:9696"
+      - 9696
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.lan`)"
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    networks:
+      - lb-upstreams
+      - wireguard-users
     environment:
       - PUID=13007
       - PGID=13000
@@ -87,19 +137,87 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/qbittorrent-config:/config
       - /var/lib/vz/ezarr/data/torrents:/data/torrents
-    ports:
-      - "8081:8081"
-      - "6881:6881"
-      - "6881:6881/udp"
+      - /var/lib/vz/ezarr/health_check.sh:/health_check.sh
+    expose:
+      - 8081
+      - 6881
+      - 6881/udp
     restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD", "/bin/bash", "/health_check.sh"]
+    #   interval: 30s
+    #   retries: 3
+    #   timeout: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.lan`)"
+      - "traefik.http.services.qbittorrent-ezarr.loadbalancer.server.port=8081"
+
+  wireguard-my:
+    image: linuxserver/wireguard
+    container_name: wireguard-my
+    networks:
+      - wireguard-out
+      - wireguard-users
+    restart: unless-stopped
+    volumes:
+      - /var/lib/vz/config/wg-config:/config
+      - '/lib/modules:/lib/modules:ro'
+      - /var/lib/vz/health_check.sh:/health_check.sh
+    environment:
+      - PUID=13015
+      - PGID=13000
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    # healthcheck:
+    #   test: ["CMD", "/bin/bash", "/health_check.sh"]
+    #   interval: 30s
+    #   retries: 3
+    #   timeout: 10s
+    ports:
+      - 6081:6081
+      - 7881:6881
+      - 7881:6881/udp
 
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
+    networks:
+      - lb-upstreams
+      - host-facing  # pour joindre les applis non présentes dans cette stack docker-compose
     volumes:
       - /var/lib/vz/ezarr/config/heimdall-config:/config
     environment:
       - PUID=13014
       - PGID=13000
       - TZ=Europe/Paris
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.heimdall.rule=Host(`heimdall.lan`)"
+
+  lb:
+    image: traefik:v2.11
     ports:
-      - "8082:80"
+      - 80:80
+      - 443:443
+      - 8088:8080
+    networks:
+      - host-facing
+      - lb-upstreams
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/vz/ezarr/traefik.yaml:/etc/traefik/traefik.yaml
+      - /var/lib/vz/ezarr/traefik-acme.json:/etc/traefik/acme.json
+
+  whoami:
+    image: traefik/whoami
+    networks:
+      - lb-upstreams
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.lan`)"

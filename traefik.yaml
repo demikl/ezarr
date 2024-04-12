@@ -1,0 +1,30 @@
+api:
+  dashboard: true
+  insecure: true
+entryPoints:
+  web:
+    address: ':80'
+    http:
+  #     redirections:
+  #       entryPoint:
+  #         to: websecure
+  #         scheme: https
+  #         permanent: true
+  # websecure:
+  #   address: ':443'
+  #   http:
+  #     tls:
+  #       certResolver: default
+providers:
+  docker:
+    watch: true
+    exposedByDefault: false
+    network: lb-upstreams
+# certificatesResolvers:
+#   default:
+#     acme:
+#       email: mickael.le.baillif@gmail.com
+#       storage: /etc/traefik/acme.json
+#       #caServer: 'https://acme-v01.api.letsencrypt.org/directory'
+#       caServer: 'https://acme-staging-v02.api.letsencrypt.org/directory'
+#       tlsChallenge: {}
