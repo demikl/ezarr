@@ -95,7 +95,7 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/readarr-config:/config
       - /var/lib/vz/ezarr/data:/data
-    ports:
+    expose:
       - 8787
     restart: unless-stopped
     labels:
@@ -115,12 +115,30 @@ services:
       - TZ=Europe/Paris
     volumes:
       - /var/lib/vz/ezarr/config/prowlarr-config:/config
-    ports:
+    expose:
       - 9696
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.lan`)"
+      - "traefik.http.services.prowlarr-ezarr.loadbalancer.server.port=9696"
+
+  flaresolverr: 
+    image: ghcr.io/flaresolverr/flaresolverr:latest 
+    container_name: flaresolverr 
+    networks: 
+      - lb-upstreams 
+      - internet-access
+    expose:
+      - 8191
+    environment:
+      - PUID=13016
+      - PGID=13000
+      - TZ=Europe/Paris
+      - LOG_LEVEL=${LOG_LEVEL:-info} 
+      - LOG_HTML=${LOG_HTML:-false} 
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none} 
+    restart: unless-stopped 
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
@@ -133,13 +151,13 @@ services:
       - PGID=13000
       - UMASK=002
       - TZ=Europe/Paris
-      - WEBUI_PORT=8081
+      - WEBUI_PORT=8080
     volumes:
       - /var/lib/vz/ezarr/config/qbittorrent-config:/config
       - /var/lib/vz/ezarr/data/torrents:/data/torrents
       - /var/lib/vz/ezarr/health_check.sh:/health_check.sh
     expose:
-      - 8081
+      - 8080
       - 6881
       - 6881/udp
     restart: unless-stopped
@@ -151,7 +169,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.lan`)"
-      - "traefik.http.services.qbittorrent-ezarr.loadbalancer.server.port=8081"
+      - "traefik.http.services.qbittorrent-ezarr.loadbalancer.server.port=8080"
 
   wireguard-my:
     image: linuxserver/wireguard

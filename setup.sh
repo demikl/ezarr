@@ -16,6 +16,7 @@ sudo useradd jellyseerr -u 13012
 sudo useradd bazarr -u 13013
 sudo useradd heimdall -u 13014
 sudo useradd wireguard-my -u 13015
+sudo useradd flaresolverr -u 13016
 sudo groupadd mediacenter -g 13000
 sudo usermod -a -G mediacenter sonarr
 sudo usermod -a -G mediacenter radarr
@@ -32,10 +33,11 @@ sudo usermod -a -G mediacenter jellyseerr
 sudo usermod -a -G mediacenter bazarr
 sudo usermod -a -G mediacenter heimdall
 sudo usermod -a -G mediacenter wireguard-my
+sudo usermod -a -G mediacenter flaresolverr
 
 # Make directories
-sudo mkdir -pv config/{sonarr,radarr,lidarr,readarr,mylar,prowlarr,qbittorrent,jackett,audiobookshelf,overseerr,plex,tautulli,sabnzbd,jellyseerr,bazarr,heimdall,wg}-config
-sudo mkdir -pv data/{torrents,usenet,media}/{tv,movies,music,books,comics,audiobooks,podcasts,audiobookshelf-metadata}
+sudo mkdir -pv config/{sonarr,radarr,lidarr,readarr,mylar,prowlarr,qbittorrent,jackett,audiobookshelf,overseerr,plex,tautulli,sabnzbd,jellyseerr,bazarr,heimdall,wg,flaresolverr}-config
+sudo mkdir -pv data/{torrents,usenet,media}/{tv,movies,music,books,comics,audiobooks,podcasts,audiobookshelf-metadata,flaresolverr}
 
 # Set permissions
 sudo chmod -R 775 data/
@@ -55,5 +57,6 @@ sudo chown -R jellyseerr:mediacenter config/jellyseerr-config
 sudo chown -R bazarr:mediacenter config/bazarr-config
 sudo chown -R heimdall:mediacenter config/heimdall-config
 sudo chown -R wireguard-my:mediacenter config/wg-config
+sudo chown -R flaresolverr:mediacenter config/flaresolverr-config
 
 echo "UID=$(id -u)" >> .env
