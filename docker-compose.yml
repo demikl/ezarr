@@ -16,6 +16,8 @@ networks:
   wireguard-users:
     driver: bridge
     internal: true
+    driver_opts:
+      com.docker.network.container_iface_prefix: wgusers
   
 services:
   sonarr:
