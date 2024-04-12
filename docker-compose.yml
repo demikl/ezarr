@@ -221,3 +221,4 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.lan`)"
+      - "traefik.http.services.whoami-ezarr.loadbalancer.server.port=80"

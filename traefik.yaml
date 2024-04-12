@@ -19,7 +19,7 @@ providers:
   docker:
     watch: true
     exposedByDefault: false
-    network: lb-upstreams
+    network: ezarr_lb-upstreams
 # certificatesResolvers:
 #   default:
 #     acme:
