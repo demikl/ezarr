@@ -13,11 +13,6 @@ networks:
   wireguard-out:
     driver: bridge
     internal: false
-  wireguard-users:
-    driver: bridge
-    internal: true
-    driver_opts:
-      com.docker.network.container_iface_prefix: wgusers
   
 services:
   sonarr:
@@ -145,9 +140,9 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    networks:
-      - lb-upstreams
-      - wireguard-users
+    network_mode: service:wireguard-my
+    depends_on:
+      - wireguard-my
     environment:
       - PUID=13007
       - PGID=13000
@@ -157,33 +152,25 @@ services:
     volumes:
       - /var/lib/vz/ezarr/config/qbittorrent-config:/config
       - /var/lib/vz/ezarr/data/torrents:/data/torrents
-      - /var/lib/vz/ezarr/health_check.sh:/health_check.sh
-    expose:
-      - 8080
-      - 6881
-      - 6881/udp
+      - /var/lib/vz/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD", "/bin/bash", "/health_check.sh"]
-    #   interval: 30s
-    #   retries: 3
-    #   timeout: 10s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.lan`)"
-      - "traefik.http.services.qbittorrent-ezarr.loadbalancer.server.port=8080"
+    healthcheck:
+      test: ["CMD", "/bin/bash", "/vpn_health_check.sh"]
+      interval: 30s
+      retries: 3
+      timeout: 10s
 
   wireguard-my:
-    image: linuxserver/wireguard
+    image: lscr.io/linuxserver/wireguard
     container_name: wireguard-my
     networks:
       - wireguard-out
-      - wireguard-users
+      - lb-upstreams  # car le port du webui de qbittorrent va etre exposé via le conteneur wireguard-my
     restart: unless-stopped
     volumes:
-      - /var/lib/vz/config/wg-config:/config
+      - /var/lib/vz/ezarr/config/wg-config:/config
       - '/lib/modules:/lib/modules:ro'
-      - /var/lib/vz/health_check.sh:/health_check.sh
+      - /var/lib/vz/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     environment:
       - PUID=13015
       - PGID=13000
@@ -191,15 +178,19 @@ services:
       - NET_ADMIN
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
-    # healthcheck:
-    #   test: ["CMD", "/bin/bash", "/health_check.sh"]
-    #   interval: 30s
-    #   retries: 3
-    #   timeout: 10s
+    healthcheck:
+      test: ["CMD", "/bin/bash", "/vpn_health_check.sh"]
+      interval: 30s
+      retries: 3
+      timeout: 10s
     ports:
       - 6081:6081
       - 7881:6881
       - 7881:6881/udp
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.lan`)"
+      - "traefik.http.services.qbittorrent-ezarr.loadbalancer.server.port=8080"
 
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
