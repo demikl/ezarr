@@ -28,7 +28,7 @@ services:
       - TZ=Europe/Paris
     volumes:
       - /var/lib/vz/ezarr/config/sonarr-config:/config
-      - /var/lib/vz/ezarr/data:/data
+      - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
     expose:
       - 8989
     restart: unless-stopped
@@ -49,7 +49,7 @@ services:
       - TZ=Europe/Paris
     volumes:
       - /var/lib/vz/ezarr/config/radarr-config:/config
-      - /var/lib/vz/ezarr/data:/data
+      - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
     expose:
       - 7878
     restart: unless-stopped
@@ -70,7 +70,7 @@ services:
   #     - TZ=Europe/Paris
   #   volumes:
   #     - /var/lib/vz/ezarr/config/lidarr-config:/config
-  #     - /var/lib/vz/ezarr/data:/data
+  #     - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
   #   expose:
   #     - 8686
   #   restart: unless-stopped
@@ -91,7 +91,7 @@ services:
   #     - TZ=Europe/Paris
   #   volumes:
   #     - /var/lib/vz/ezarr/config/readarr-config:/config
-  #     - /var/lib/vz/ezarr/data:/data
+  #     - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
   #   expose:
   #     - 8787
   #   restart: unless-stopped
@@ -151,7 +151,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - /var/lib/vz/ezarr/config/qbittorrent-config:/config
-      - /var/lib/vz/ezarr/data/torrents:/data/torrents
+      - /var/lib/vz/mounts/nasbox/Media/stackarr/torrents:/data/torrents
       - /var/lib/vz/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     restart: unless-stopped
     healthcheck:
