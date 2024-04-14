@@ -57,47 +57,47 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.radarr.rule=Host(`radarr.lan`)"
 
-  lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    networks:
-      - lb-upstreams
-      - internet-access
-    environment:
-      - PUID=13003
-      - PGID=13000
-      - UMASK=002
-      - TZ=Europe/Paris
-    volumes:
-      - /var/lib/vz/ezarr/config/lidarr-config:/config
-      - /var/lib/vz/ezarr/data:/data
-    expose:
-      - 8686
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lidarr.rule=Host(`lidarr.lan`)"
+  # lidarr:
+  #   image: lscr.io/linuxserver/lidarr:latest
+  #   container_name: lidarr
+  #   networks:
+  #     - lb-upstreams
+  #     - internet-access
+  #   environment:
+  #     - PUID=13003
+  #     - PGID=13000
+  #     - UMASK=002
+  #     - TZ=Europe/Paris
+  #   volumes:
+  #     - /var/lib/vz/ezarr/config/lidarr-config:/config
+  #     - /var/lib/vz/ezarr/data:/data
+  #   expose:
+  #     - 8686
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.lidarr.rule=Host(`lidarr.lan`)"
 
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    networks:
-      - lb-upstreams
-      - internet-access
-    environment:
-      - PUID=13004
-      - PGID=13000
-      - UMASK=002
-      - TZ=Europe/Paris
-    volumes:
-      - /var/lib/vz/ezarr/config/readarr-config:/config
-      - /var/lib/vz/ezarr/data:/data
-    expose:
-      - 8787
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.readarr.rule=Host(`readarr.lan`)"
+  # readarr:
+  #   image: lscr.io/linuxserver/readarr:develop
+  #   container_name: readarr
+  #   networks:
+  #     - lb-upstreams
+  #     - internet-access
+  #   environment:
+  #     - PUID=13004
+  #     - PGID=13000
+  #     - UMASK=002
+  #     - TZ=Europe/Paris
+  #   volumes:
+  #     - /var/lib/vz/ezarr/config/readarr-config:/config
+  #     - /var/lib/vz/ezarr/data:/data
+  #   expose:
+  #     - 8787
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.readarr.rule=Host(`readarr.lan`)"
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:develop
@@ -223,13 +223,13 @@ services:
       - /var/lib/vz/ezarr/traefik.yaml:/etc/traefik/traefik.yaml
       - /var/lib/vz/ezarr/traefik-acme.json:/etc/traefik/acme.json
 
-  whoami:
-    image: traefik/whoami
-    networks:
-      - lb-upstreams
-    expose:
-      - 80
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.lan`)"
-      - "traefik.http.services.whoami-ezarr.loadbalancer.server.port=80"
+  # whoami:
+  #   image: traefik/whoami
+  #   networks:
+  #     - lb-upstreams
+  #   expose:
+  #     - 80
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.whoami.rule=Host(`whoami.lan`)"
+  #     - "traefik.http.services.whoami-ezarr.loadbalancer.server.port=80"
