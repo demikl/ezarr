@@ -236,3 +236,42 @@ services:
   #     - "traefik.enable=true"
   #     - "traefik.http.routers.whoami.rule=Host(`whoami.lan`)"
   #     - "traefik.http.services.whoami-ezarr.loadbalancer.server.port=80"
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=13010
+      - PGID=13000
+      - VERSION=docker
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    volumes:
+      - /data-hdd/ezarr/config/plex-config:/config
+      - /data-hdd/ezarr/data/media:/media-hdd:ro
+      - /mnt/nfs/nasbox/Media:/media-nasbox:ro
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    depends_on:
+      - plex
+    networks:
+      - lb-upstreams
+      - internet-access
+    environment:
+      - PUID=${UID}
+      - PGID=13000
+      - TZ=${TIMEZONE}
+    volumes:
+      - /data-hdd/ezarr/config/tautulli-config:/config
+    expose:
+      - 8181
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tautulli.rule=Host(`tautulli.lan`)"
+      - "traefik.http.services.tautulli-ezarr.loadbalancer.server.port=8181"
