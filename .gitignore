@@ -1,4 +1,8 @@
 /data/
 /config/
 *.pyc
+.env
+backup_*
+backup-*
+listing_fichiers*
 traefik-acme.json
