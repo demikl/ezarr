@@ -27,8 +27,9 @@ services:
       - UMASK=002
       - TZ=Europe/Paris
     volumes:
-      - /var/lib/vz/ezarr/config/sonarr-config:/config
-      - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
+      - /data-hdd/ezarr/config/sonarr-config:/config
+      - /data-hdd/ezarr/data:/data-hdd
+      - /mnt/nfs/nasbox/Media/stackarr:/data
     expose:
       - 8989
     restart: unless-stopped
@@ -48,8 +49,9 @@ services:
       - UMASK=002
       - TZ=Europe/Paris
     volumes:
-      - /var/lib/vz/ezarr/config/radarr-config:/config
-      - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
+      - /data-hdd/ezarr/config/radarr-config:/config
+      - /data-hdd/ezarr/data:/data-hdd
+      - /mnt/nfs/nasbox/Media/stackarr:/data
     expose:
       - 7878
     restart: unless-stopped
@@ -69,7 +71,7 @@ services:
   #     - UMASK=002
   #     - TZ=Europe/Paris
   #   volumes:
-  #     - /var/lib/vz/ezarr/config/lidarr-config:/config
+  #     - /data/ezarr/config/lidarr-config:/config
   #     - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
   #   expose:
   #     - 8686
@@ -90,7 +92,7 @@ services:
   #     - UMASK=002
   #     - TZ=Europe/Paris
   #   volumes:
-  #     - /var/lib/vz/ezarr/config/readarr-config:/config
+  #     - /data/ezarr/config/readarr-config:/config
   #     - /var/lib/vz/mounts/nasbox/Media/stackarr:/data
   #   expose:
   #     - 8787
@@ -111,7 +113,7 @@ services:
       - UMASK=002
       - TZ=Europe/Paris
     volumes:
-      - /var/lib/vz/ezarr/config/prowlarr-config:/config
+      - /data-hdd/ezarr/config/prowlarr-config:/config
     expose:
       - 9696
     restart: unless-stopped
@@ -150,9 +152,10 @@ services:
       - TZ=Europe/Paris
       - WEBUI_PORT=8080
     volumes:
-      - /var/lib/vz/ezarr/config/qbittorrent-config:/config
-      - /var/lib/vz/mounts/nasbox/Media/stackarr/torrents:/data/torrents
-      - /var/lib/vz/ezarr/vpn_health_check.sh:/vpn_health_check.sh
+      - /data-hdd/ezarr/config/qbittorrent-config:/config
+      - /data-hdd/ezarr/data/torrents:/data-hdd/torrents
+      - /mnt/nfs/nasbox/Media/stackarr/torrents:/data/torrents
+      - /data-hdd/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "/bin/bash", "/vpn_health_check.sh"]
@@ -168,9 +171,9 @@ services:
       - lb-upstreams  # car le port du webui de qbittorrent va etre exposé via le conteneur wireguard-my
     restart: unless-stopped
     volumes:
-      - /var/lib/vz/ezarr/config/wg-config:/config
+      - /data-hdd/ezarr/config/wg-config:/config
       - '/lib/modules:/lib/modules:ro'
-      - /var/lib/vz/ezarr/vpn_health_check.sh:/vpn_health_check.sh
+      - /data-hdd/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     environment:
       - PUID=13015
       - PGID=13000
@@ -198,7 +201,7 @@ services:
       - lb-upstreams
       - host-facing  # pour joindre les applis non présentes dans cette stack docker-compose
     volumes:
-      - /var/lib/vz/ezarr/config/heimdall-config:/config
+      - /data-hdd/ezarr/config/heimdall-config:/config
     environment:
       - PUID=13014
       - PGID=13000
@@ -220,8 +223,8 @@ services:
       - lb-upstreams
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/vz/ezarr/traefik.yaml:/etc/traefik/traefik.yaml
-      - /var/lib/vz/ezarr/traefik-acme.json:/etc/traefik/acme.json
+      - /data-hdd/ezarr/traefik.yaml:/etc/traefik/traefik.yaml
+      - /data-hdd/ezarr/traefik-acme.json:/etc/traefik/acme.json
 
   # whoami:
   #   image: traefik/whoami
