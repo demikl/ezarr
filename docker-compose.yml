@@ -275,3 +275,23 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.tautulli.rule=Host(`tautulli.lan`)"
       - "traefik.http.services.tautulli-ezarr.loadbalancer.server.port=8181"
+
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    networks:
+      - lb-upstreams
+      - internet-access
+    environment:
+      - PUID=13009
+      - PGID=13000
+      - LOG_LEVEL=info
+      - TZ=Europe/Paris
+    expose:
+      - 5055
+    volumes:
+      - /data-hdd/ezarr/config/overseerr-config:/app/config
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.overseerr.rule=Host(`overseerr.lan`)"
