@@ -28,8 +28,7 @@ services:
       - TZ=Europe/Paris
     volumes:
       - /data-hdd/ezarr/config/sonarr-config:/config
-      - /data-hdd/ezarr/data:/data-hdd
-      - /mnt/nfs/nasbox/Media/stackarr:/data
+      - /data-ssd/medias/stackarr:/data
     expose:
       - 8989
     restart: unless-stopped
@@ -50,8 +49,7 @@ services:
       - TZ=Europe/Paris
     volumes:
       - /data-hdd/ezarr/config/radarr-config:/config
-      - /data-hdd/ezarr/data:/data-hdd
-      - /mnt/nfs/nasbox/Media/stackarr:/data
+      - /data-ssd/medias/stackarr:/data
     expose:
       - 7878
     restart: unless-stopped
@@ -153,8 +151,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - /data-hdd/ezarr/config/qbittorrent-config:/config
-      - /data-hdd/ezarr/data/torrents:/data-hdd/torrents
-      - /mnt/nfs/nasbox/Media/stackarr/torrents:/data/torrents
+      - /data-ssd/medias/stackarr/torrents:/data/torrents
       - /data-hdd/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     restart: unless-stopped
     healthcheck:
@@ -248,8 +245,8 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
       - /data-hdd/ezarr/config/plex-config:/config
-      - /data-hdd/ezarr/data/media:/media-hdd:ro
-      - /mnt/nfs/nasbox/Media:/media-nasbox:ro
+      - /data-ssd/medias/stackarr:/media/stackarr:ro
+      - /data-ssd/medias:/media/legacy:ro
     devices:
       - /dev/dri:/dev/dri
     restart: unless-stopped
