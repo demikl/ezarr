@@ -292,3 +292,19 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.overseerr.rule=Host(`overseerr.lan`)"
+
+  glances:
+    image: nicolargo/glances:latest-alpine
+    restart: always
+    pid: host
+    networks:
+      - lb-upstreams
+#   privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - "GLANCES_OPT=-w"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.glances.rule=Host(`glances.lan`)"
+      - "traefik.http.services.glances-ezarr.loadbalancer.server.port=61208"
