@@ -105,6 +105,9 @@ services:
     networks:
       - lb-upstreams
       - internet-access
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
     environment:
       - PUID=13006
       - PGID=13000
@@ -126,6 +129,9 @@ services:
     networks: 
       - lb-upstreams 
       - internet-access
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
     expose:
       - 8191
     environment:
@@ -308,3 +314,17 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.glances.rule=Host(`glances.lan`)"
       - "traefik.http.services.glances-ezarr.loadbalancer.server.port=61208"
+
+  dozzle:
+    image: amir20/dozzle:latest
+    networks:
+      - lb-upstreams
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dozzle.rule=Host(`dozzle.lan`)"
+      - "traefik.http.services.dozzle-ezarr.loadbalancer.server.port=8080"
+
