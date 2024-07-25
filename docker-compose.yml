@@ -328,3 +328,21 @@ services:
       - "traefik.http.routers.dozzle.rule=Host(`dozzle.lan`)"
       - "traefik.http.services.dozzle-ezarr.loadbalancer.server.port=8080"
 
+  yacht:
+    image: selfhostedpro/yacht
+    container_name: yacht
+    restart: unless-stopped
+    networks:
+      - lb-upstreams
+    ports:
+      - 8000:8000
+    volumes:
+      - yacht:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yacht.rule=Host(`yacht.lan`)"
+      - "traefik.http.services.yacht-ezarr.loadbalancer.server.port=8000"
+
+volumes:
+  yacht:
