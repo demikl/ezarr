@@ -158,13 +158,7 @@ services:
     volumes:
       - /data-hdd/ezarr/config/qbittorrent-config:/config
       - /data-ssd/medias/stackarr/torrents:/data/torrents
-      - /data-hdd/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "/bin/bash", "/vpn_health_check.sh"]
-      interval: 30s
-      retries: 3
-      timeout: 10s
 
   wireguard-my:
     image: lscr.io/linuxserver/wireguard
