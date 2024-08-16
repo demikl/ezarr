@@ -245,7 +245,7 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
       - /data-hdd/ezarr/config/plex-config:/config
-      - /data-ssd/medias/stackarr:/media/stackarr:ro
+      - /data-ssd/medias/stackarr:/media/stackarr
       - /data-ssd/medias:/media/legacy:ro
     devices:
       - /dev/dri:/dev/dri
