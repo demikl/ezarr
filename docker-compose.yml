@@ -170,7 +170,6 @@ services:
     volumes:
       - /data-hdd/ezarr/config/wg-config:/config
       - '/lib/modules:/lib/modules:ro'
-      - /data-hdd/ezarr/vpn_health_check.sh:/vpn_health_check.sh
     environment:
       - PUID=13015
       - PGID=13000
@@ -178,11 +177,6 @@ services:
       - NET_ADMIN
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
-    healthcheck:
-      test: ["CMD", "/bin/bash", "/vpn_health_check.sh"]
-      interval: 30s
-      retries: 3
-      timeout: 10s
     ports:
       - 6081:6081
       - 7881:6881
